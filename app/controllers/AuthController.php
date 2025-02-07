@@ -12,54 +12,47 @@ class AuthController extends BaseController {
         $this->render('auth/register');
     }
 
-    public function showleLogin() {
+    public function showLogin() {
         $this->render('auth/login');
     }
     
     public function handleRegister() {
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $errors = [];
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            try {
+                $username = $_POST['username'];
+                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                $email = $_POST['email'];
+                $role = $_POST['role'] ?? 'student'; 
 
-            if (empty($username)) {
-                $errors['username'] = 'Username is required';
-            }
+                // Add validation
+                if (empty($username) || empty($password) || empty($email)) {
+                    $_SESSION['error'] = 'All fields are required';
+                    header('Location: /register');
+                    exit();
+                }
 
-            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = 'Valid email is required';
-            }
+                $result = $this->UserModel->register($username, $password, $email, $role);
 
-            if (strlen($password) < 8) {
-                $errors['password'] = 'Password must be at least 8 characters';
-            }
+                if (isset($result['error'])) {
+                    $_SESSION['error'] = $result['error'];
+                    header('Location: /register');
+                    exit();
+                }
 
-            if ($password !== $password_confirm) {
-                $errors['password_confirm'] = 'Passwords do not match';
-            }
-
-            if (!in_array($role, ['student', 'teacher'])) {
-                $errors['role'] = 'Invalid role selected';
-            }
-
-            if (empty($errors)) {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $user = [
-                    $username,
-                    $hashed_password,
-                    $email,
-                    $role
-                ];
-
-                    $userId = $this->UserModel->register($user);
-                    if ($userId) {
-                        $_SESSION['user_id'] = $userId;
-                        $_SESSION['user_role'] = $role;
-                        $_SESSION['username'] = $username;
-
-                       header('location: login');
-                        exit;
-                    }
+                // If we get here, registration was successful
+                $_SESSION['success'] = 'Account created successfully! Please login.';
+                header('Location: /login');
+                exit();
+            } catch (Exception $e) {
+                error_log("Registration error: " . $e->getMessage());
+                $_SESSION['error'] = 'An error occurred during registration';
+                header('Location: /register');
+                exit();
             }
         }
+        
+        // Only render the registration form if it's a GET request
+        $this->render('auth/register');
     }
 
     public function handleLogin() {
@@ -80,9 +73,9 @@ class AuthController extends BaseController {
             if (empty($errors)) {
                     $user = $this->UserModel->login([$email, $password]);
                     if ($user) {
-                        $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['user_id'] = $user['user_id'];
                         $_SESSION['user_role'] = $user['role'];
-                        $_SESSION['username'] = $user['nom_utilisateur'];
+                        $_SESSION['username'] = $user['username'];
                         header('Location: /student/dashboard');
 
         }}}

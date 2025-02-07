@@ -13,8 +13,9 @@ class AdminController {
 
     public function dashboard() {
         $users = $this->userModel->getAllUsers();
-        $subjects = $this->subjectModel->getAllSuggestions();
-        $this->render('admin/dashboard', ['users' => $users, 'subjects' => $subjects]);
+        $subjects = $this->subjectModel->getPendingSuggestions();
+        $subjectss = $this->subjectModel->getAllSuggestions();
+        $this->render('admin/dashboard', ['users' => $users, 'subjects' => $subjects, 'subjectss' => $subjectss]);
     }
 
     public function updateUserStatus() {

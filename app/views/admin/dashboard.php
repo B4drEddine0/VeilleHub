@@ -39,7 +39,6 @@
     </script>
 </head>
 <body class="bg-gray-100">
-    <!-- Navigation -->
     <nav class="bg-white shadow-md border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
@@ -65,9 +64,9 @@
                 <div class="flex items-center space-x-4">
                     <div class="relative">
                         <div class="flex items-center space-x-3">
-                            <span class="text-gray-700 font-medium">Admin</span>
+                            <span class="text-gray-700 font-medium"><?= $_SESSION['username']?></span>
                             <button type="button" class="bg-gradient-to-r from-primary-500 to-secondary-500 p-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                                <img class="h-8 w-8 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="">
+                                <img class="h-8 w-8 rounded-full border-2 border-white" src="https://cdn1.iconfinder.com/data/icons/avatar-2-2/512/Salesman_1-512.png" alt="">
                             </button>
                         </div>
                     </div>
@@ -83,11 +82,9 @@
         </div>
     <?php endif; ?>
 
-    <!-- Main Content -->
+
     <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <!-- Dashboard Section -->
         <section id="dashboard-section" class="space-y-8">
-            <!-- Welcome Banner -->
             <div class="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl shadow-xl mb-8 p-8 text-white relative overflow-hidden">
                 <div class="relative z-10">
                     <h2 class="text-3xl font-bold mb-2">Admin Dashboard</h2>
@@ -96,9 +93,7 @@
                 <div class="absolute right-0 top-0 h-full w-1/2 bg-white opacity-10 transform -skew-x-12"></div>
             </div>
 
-            <!-- Stats Grid -->
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                <!-- Total Users -->
                 <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -117,7 +112,6 @@
                     </div>
                 </div>
 
-                <!-- Active Users -->
                 <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -136,7 +130,6 @@
                     </div>
                 </div>
 
-                <!-- Pending Subjects -->
                 <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -155,7 +148,6 @@
                     </div>
                 </div>
 
-                <!-- Scheduled Presentations -->
                 <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -176,7 +168,6 @@
             </div>
         </section>
 
-        <!-- Manage Users Section -->
         <section id="users-section" class="hidden space-y-6">
             <div class="bg-white rounded-xl shadow-md">
                 <div class="px-6 py-4 border-b border-gray-200">
@@ -224,7 +215,6 @@
                                     </td>
                                 </tr>
                                 <?php endforeach;?>
-                                <!-- More user rows... -->
                             </tbody>
                         </table>
                     </div>
@@ -232,7 +222,6 @@
             </div>
         </section>
 
-        <!-- Manage Subjects Section -->
         <section id="subjects-section" class="hidden space-y-6">
             <div class="bg-white rounded-xl shadow-md">
                 <div class="px-6 py-4 border-b border-gray-200">
@@ -268,7 +257,6 @@
                             </div>
                         </div>
                         <?php endforeach;?>
-                        <!-- More subject items... -->
                     </div>
                 </div>
             </div>
@@ -298,9 +286,9 @@
                                 <label class="block text-sm font-medium text-gray-700">Subject</label>
                                 <select name="subject_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500" required>
                                     <option value="">Select Subject</option>
-                                    <?php foreach($subjects as $subject): ?>
+                                    <?php foreach($subjectss as $subject): ?>
                                         <?php if($subject['status'] == 'approved'): ?>
-                                            <option value="<?= $subject['id'] ?>"><?= htmlspecialchars($subject['title']) ?></option>
+                                            <option value="<?= $subject['sub_id'] ?>"><?= htmlspecialchars($subject['title']) ?></option>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                 </select>
@@ -310,7 +298,7 @@
                                 <select name="presenters[]" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500" required>
                                     <?php foreach($users as $user): ?>
                                         <?php if($user['status'] == 'active'): ?>
-                                            <option value="<?= $user['id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
+                                            <option value="<?= $user['user_id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                 </select>

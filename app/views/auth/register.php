@@ -54,6 +54,20 @@
                     <p class="text-gray-500 text-sm">Join us to start your learning journey</p>
                 </div>
 
+                <?php if(isset($_SESSION['error'])): ?>
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <span class="block sm:inline"><?= $_SESSION['error'] ?></span>
+                        <?php unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if(isset($_SESSION['success'])): ?>
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <span class="block sm:inline"><?= $_SESSION['success'] ?></span>
+                        <?php unset($_SESSION['success']); ?>
+                    </div>
+                <?php endif; ?>
+
                 <form action="/register" method="POST" class="space-y-4">
                     <div class="space-y-1">
                         <label for="username" class="text-sm font-medium text-gray-700 block">Username</label>

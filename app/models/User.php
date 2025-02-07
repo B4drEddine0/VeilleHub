@@ -8,31 +8,13 @@ public function __construct()
     parent::__construct();
 }
 
-public function register($user) {
-   
-    try {
-        $checkEmail = $this->conn->prepare("SELECT user_id FROM users WHERE email = ?");
-        $checkEmail->execute([$user[2]]);
-        if ($checkEmail->fetch()) {
-            throw new Exception('Email already exists');
+public function register($username, $password, $email, $role) {
+        $stmt = $this->conn->prepare("INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)");
+        if ($stmt->execute([$username, $password, $email, $role])) {
+            return ['success' => true, 'user_id' => $this->conn->lastInsertId()];
+        } else {
+            return ['error' => 'Failed to create account'];
         }
-
-        // Check if username already exists
-        $checkUsername = $this->conn->prepare("SELECT user_id FROM users WHERE username = ?");
-        $checkUsername->execute([$user[0]]);
-        if ($checkUsername->fetch()) {
-            throw new Exception('Username already exists');
-        }
-
-        // Prepare and execute the insertion query
-        $result = $this->conn->prepare("INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)");
-        $result->execute($user);
-        return $this->conn->lastInsertId();
-        
-       
-    } catch (PDOException $e) {
-        throw new Exception($e->getMessage());
-    }
 }
 
 public function login($userData){
@@ -54,24 +36,9 @@ public function login($userData){
     }
 }
 
-public function storeRememberToken($userId, $token) {
-    try {
-        $result = $this->conn->prepare("UPDATE users SET remember_token = ? WHERE user_id = ?");
-        return $result->execute([$token, $userId]);
-    } catch (PDOException $e) {
-        throw new Exception($e->getMessage());
-    }
-}
 
-public function getUserByRememberToken($token) {
-    try {
-        $result = $this->conn->prepare("SELECT * FROM users WHERE remember_token = ?");
-        $result->execute([$token]);
-        return $result->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        throw new Exception($e->getMessage());
-    }
-}
+
+
 
 public function getStatistics() {
     try {
@@ -95,7 +62,7 @@ public function getStatistics() {
 
 public function getAllUsers(){
       
-        $query = "SELECT * FROM users WHERE role <> 'admin' "; 
+        $query = "SELECT * FROM users WHERE role <> 'teacher' "; 
         $resul = $this->conn->prepare($query);
         $resul->execute();
         

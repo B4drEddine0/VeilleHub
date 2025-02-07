@@ -23,7 +23,7 @@ Route::setRouter($router);
 // auth routes 
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'handleRegister']);
-Route::get('/login', [AuthController::class, 'showleLogin']);
+Route::get('/login', [AuthController::class, 'showLogin']);
 Route::post('/login', [AuthController::class, 'handleLogin']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -53,6 +53,3 @@ Route::get('/admin/projects', [AdminController::class, 'projects']);
 
 // Dispatch the request
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
-
-
-

@@ -8,11 +8,15 @@ class Subject extends Db {
         }
 
 
-    public function getAllSuggestions() {
+    public function getPendingSuggestions() {
         $query = "SELECT s.*,u.username FROM subjects s join users u on s.suggested_by = u.user_id WHERE s.status = 'pending'";
         return $this->conn->query($query)->fetchAll();
     }
 
+    public function getAllSuggestions() {
+        $query = "SELECT s.*,u.username FROM subjects s join users u on s.suggested_by = u.user_id";
+        return $this->conn->query($query)->fetchAll();
+    }
 
     public function updateStatus($subjectId, $action) {
         $status = ($action === 'approve') ? 'approved' : 'declined';
