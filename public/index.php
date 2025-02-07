@@ -29,6 +29,9 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 
 Route::get('/student/dashboard', [StudentController::class, 'dashboard']);
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+Route::post('/admin/updateUserStatus', [AdminController::class, 'updateUserStatus']);
+Route::post('/admin/handleSubject', [AdminController::class, 'handleSubject']);
 
 
 // admin routers

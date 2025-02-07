@@ -14,20 +14,17 @@ class StudentController extends BaseController {
 
     public function dashboard() {
         // Get statistics
-        $stats = [
-            'suggestions_count' => $this->subjectModel->getStudentSuggestionsCount($_SESSION['user_id']),
-            'upcoming_presentations' => $this->subjectModel->getUpcomingPresentationsCount($_SESSION['user_id']),
-            'completed_presentations' => $this->subjectModel->getCompletedPresentationsCount($_SESSION['user_id'])
-        ];
+        // $stats = [
+        //     'suggestions_count' => $this->subjectModel->getStudentSuggestionsCount($_SESSION['user_id']),
+        //     'upcoming_presentations' => $this->subjectModel->getUpcomingPresentationsCount($_SESSION['user_id']),
+        //     'completed_presentations' => $this->subjectModel->getCompletedPresentationsCount($_SESSION['user_id'])
+        // ];
 
         // Get recent suggestions
-        $recentSuggestions = $this->subjectModel->getRecentSuggestions($_SESSION['user_id']);
+        // $recentSuggestions = $this->subjectModel->getRecentSuggestions($_SESSION['user_id']);
 
         // Render dashboard view
-        $this->render('student/dashboard', [
-            'stats' => $stats,
-            'recentSuggestions' => $recentSuggestions
-        ]);
+        $this->render('student/dashboard');
     }
 
     public function suggest() {

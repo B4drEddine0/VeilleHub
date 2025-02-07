@@ -12,7 +12,6 @@
 <body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-teal-100 min-h-screen">
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl flex flex-col md:flex-row">
-            <!-- Left Side - Image and Text -->
             <div class="md:w-1/2 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-l-2xl p-6 text-white flex flex-col justify-between">
                 <div class="mb-4">
                     <h2 class="text-3xl font-bold mb-2">VeilleHub</h2>
@@ -49,7 +48,6 @@
                 </div>
             </div>
 
-            <!-- Right Side - Register Form -->
             <div class="md:w-1/2 p-6">
                 <div class="text-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800 mb-1">Create Account</h1>
@@ -125,7 +123,6 @@
                         </div>
                     </div>
 
-                    <!-- General error message area -->
                     <div id="general-error" class="text-red-500 text-sm text-center hidden"></div>
 
                     <button type="submit" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">

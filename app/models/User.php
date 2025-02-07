@@ -93,34 +93,20 @@ public function getStatistics() {
     }
 }
 
-public function getAllUsers($filter, $userToSearch =''){
-    try {
+public function getAllUsers(){
       
-        $query = "SELECT * FROM users WHERE role != 1"; 
-        
-        // add filter to query
-        if ($filter == 'clients') {
-            $query .= " AND role = 2";
-        } elseif ($filter == 'freelancers') {
-            $query .= " AND role = 3";
-        }
-        
-        // add search condition to query
-        if ($userToSearch) {
-            $query .= " AND username LIKE ?";
-        }
-        
+        $query = "SELECT * FROM users WHERE role <> 'admin' "; 
         $resul = $this->conn->prepare($query);
-        $resul->execute($userToSearch ? ["%$userToSearch%"] : []);
+        $resul->execute();
         
-        // Fetch and return results
         $users = $resul->fetchAll(PDO::FETCH_ASSOC);
         return $users;
-   
-
-    } catch (PDOException $e) {
-        throw new Exception($e->getMessage());
-    }
 }
+
+public function updateStatus($userId, $status) {
+        $stmt = $this->conn->prepare("UPDATE users SET status = ? WHERE user_id = ?");
+        return $stmt->execute([$status, $userId]);
+}
+
 
 }

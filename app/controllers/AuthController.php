@@ -80,9 +80,9 @@ class AuthController extends BaseController {
             if (empty($errors)) {
                     $user = $this->UserModel->login([$email, $password]);
                     if ($user) {
-                        // $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['user_id'] = $user['id'];
                         $_SESSION['user_role'] = $user['role'];
-                        // $_SESSION['username'] = $user['nom_utilisateur'];
+                        $_SESSION['username'] = $user['nom_utilisateur'];
                         header('Location: /student/dashboard');
 
         }}}
