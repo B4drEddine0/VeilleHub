@@ -50,11 +50,11 @@ class AuthController extends BaseController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errors = [];
             
-            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+            $email =  $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = 'Valid email is required';
+            if (empty($email)) {
+                $errors['email'] = 'email is required';
             }
 
             if (empty($password)) {
@@ -67,7 +67,13 @@ class AuthController extends BaseController {
                         $_SESSION['user_id'] = $user['user_id'];
                         $_SESSION['user_role'] = $user['role'];
                         $_SESSION['username'] = $user['username'];
-                        header('Location: /student/dashboard');
+
+                        if($_SESSION['user_role'] === 'student'){
+                            header('Location: /student/dashboard');
+                        }elseif($_SESSION['user_role'] === 'teacher'){
+                            header('Location: /admin/dashboard');
+                        }
+                        
 
         }}}
     }

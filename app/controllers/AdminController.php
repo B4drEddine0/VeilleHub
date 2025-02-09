@@ -3,53 +3,25 @@
 class AdminController {
     private $userModel;
     private $subjectModel;
+    private $presentationModel;
     private $db;
 
     public function __construct() {
         require_once '../app/models/User.php';
         require_once '../app/models/Subject.php';
+        require_once '../app/models/Presentation.php';
         $this->userModel = new User();
         $this->subjectModel = new Subject();
+        $this->presentationModel = new Presentation();
         $this->db = new PDO('mysql:host=localhost;dbname=veillehub', 'root', '');
     }
 
     public function dashboard() {
-        try {
-            // Get presentations from database using your existing table structure
-            $query = "SELECT p.*, s.title as subject_title, 
-                      GROUP_CONCAT(u.username SEPARATOR ', ') as presenters
-                      FROM presentations p
-                      JOIN subjects s ON p.subject_id = s.sub_id
-                      JOIN presentation_participants pp ON p.present_id = pp.presentation_id
-                      JOIN users u ON pp.user_id = u.user_id
-                      GROUP BY p.present_id
-                      ORDER BY p.presentation_date";
-            
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-            $presentationResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Format presentations for the calendar
-            $presentations = array_map(function($presentation) {
-                return [
-                    'title' => $presentation['subject_title'],
-                    'date' => date('Y-m-d', strtotime($presentation['presentation_date'])),
-                    'presenters' => $presentation['presenters'],
-                    'time' => date('H:i', strtotime($presentation['presentation_date'])),
-                    'status' => $presentation['status']
-                ];
-            }, $presentationResults);
-
-        } catch (PDOException $e) {
-            // If there's an error or no presentations, initialize empty array
-            $presentations = [];
-        }
-
+        $presentations = $this->presentationModel->getAllPresentations();
         $users = $this->userModel->getAllUsers();
         $subjects = $this->subjectModel->getPendingSuggestions();
         $subjectss = $this->subjectModel->getAllSuggestions();
 
-        // Pass data to view
         $data = [
             'presentations' => $presentations,
             'users' => $users,
@@ -80,7 +52,7 @@ class AdminController {
             
             $this->subjectModel->updateStatus($subjectId, $action);
             
-            $_SESSION['message'] = "Subject " . ucfirst($action) . "d successfully";
+            $_SESSION['message'] = "Subject " . $action . "d successfully";
             header("Location: /admin/dashboard");
             exit();
         }
@@ -94,12 +66,51 @@ class AdminController {
                 'date_time' => $_POST['date_time']
             ];
             
-            $this->subjectModel->schedulePresentation($data);
+            $this->presentationModel->schedulePresentation($data);
             
             $_SESSION['message'] = "Presentation scheduled successfully";
             header("Location: /admin/dashboard");
             exit();
         }
+    }
+
+    public function deletePresentation() {
+        if (!isset($_POST['presentation_id'])) {
+            $_SESSION['error'] = 'Invalid presentation ID';
+            header('Location: /admin/dashboard');
+            return;
+        }
+
+        $presentationId = $_POST['presentation_id'];
+        $success = $this->presentationModel->deletePresentations($presentationId);
+         if ($success) {
+            $_SESSION['message'] = 'Presentation deleted successfully';
+            } else {
+                  $_SESSION['error'] = 'Failed to delete presentation';
+            }
+            
+            header('Location: /admin/dashboard');
+            exit();
+    }
+
+    public function updatePresentationStatus() {
+        if (!isset($_POST['presentation_id']) || !isset($_POST['status'])) {
+            $_SESSION['message'] = "Invalid request";
+            header('Location: /admin/dashboard');
+            return;
+        }
+
+        $presentation_id = $_POST['presentation_id'];
+        $status = $_POST['status'];
+
+        $success = $this->presentationModel->updatePresentationStatus($status,$presentation_id);
+         if ($success) {
+            $_SESSION['message'] = 'Presentation status updated successfully';
+            } else {
+                  $_SESSION['error'] = 'Error updating presentation status';
+            }
+
+        header('Location: /admin/dashboard');
     }
 
     private function render($view, $data = []) {

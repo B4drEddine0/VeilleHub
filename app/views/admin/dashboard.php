@@ -67,6 +67,10 @@
                     <div class="relative">
                         <div class="flex items-center space-x-3">
                             <span class="text-gray-700 font-medium"><?= $_SESSION['username']?></span>
+                            <a href="/logout" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="ml-1">Logout</span>
+                            </a>
                             <button type="button" class="bg-gradient-to-r from-primary-500 to-secondary-500 p-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                                 <img class="h-8 w-8 rounded-full border-2 border-white" src="https://cdn1.iconfinder.com/data/icons/avatar-2-2/512/Salesman_1-512.png" alt="">
                             </button>
@@ -168,6 +172,73 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Add the new presentations table -->
+            <div class="mt-8 bg-white rounded-xl shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Manage Presentations</h3>
+                </div>
+                <div class="p-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Presenters</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach($presentations as $presentation): ?>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900"><?= htmlspecialchars($presentation['title']) ?></div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            <?php foreach(explode(',', $presentation['presenters']) as $presenter): ?>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                                                <?= htmlspecialchars(trim($presenter)) ?>
+                                            </span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <?= htmlspecialchars($presentation['date'])  ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <form action="/admin/updatePresentationStatus" method="POST">
+                                            <input type="hidden" name="presentation_id" value="<?= $presentation['id'] ?>">
+                                            <select name="status" onchange="this.form.submit()" 
+                                                    class="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-xs">
+                                                <option value="upcoming" <?= $presentation['status'] == 'scheduled' ? 'selected' : '' ?>>scheduled</option>
+                                                <option value="completed" <?= $presentation['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
+                                                <option value="cancelled" <?= $presentation['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-3">
+                                            <form action="/admin/deletePresentation" method="POST" class="inline" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this presentation?')">
+                                                <input type="hidden" name="presentation_id" value="<?= $presentation['id'] ?>">
+                                                <button type="submit" class="ml-6 text-red-600 hover:text-red-900">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="users-section" class="hidden space-y-6">
@@ -264,10 +335,9 @@
             </div>
         </section>
 
-        <!-- Schedule Presentations Section -->
+   
         <section id="schedule-section" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Calendar -->
                 <div class="bg-white rounded-xl shadow-md">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Presentation Calendar</h3>
@@ -285,7 +355,6 @@
                             </div>
                             
                             <div class="grid grid-cols-7 gap-1">
-                                <!-- Days of Week -->
                                 <div class="text-center font-semibold text-gray-600 text-sm">Sun</div>
                                 <div class="text-center font-semibold text-gray-600 text-sm">Mon</div>
                                 <div class="text-center font-semibold text-gray-600 text-sm">Tue</div>
@@ -300,7 +369,7 @@
                     </div>
                 </div>
 
-                <!-- Schedule Form -->
+
                 <div class="bg-white rounded-xl shadow-md">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Schedule New Presentation</h3>
@@ -339,10 +408,6 @@
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                 </div>
-                                <!-- <p class="mt-2 text-sm text-gray-500 flex items-center">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Select at least 2 presenters
-                                </p> -->
                                 <p id="presenter-error" class="mt-1 text-sm text-red-600 hidden">
                                     Please select at least 2 presenters
                                 </p>
@@ -426,46 +491,31 @@
 
         document.addEventListener('DOMContentLoaded', renderCalendar);
 
-        // Update the showSection function
+        
         function showSection(sectionId) {
             console.log('Showing section:', sectionId);
-            
-            // Hide all sections
+        
             document.querySelectorAll('main > section').forEach(section => {
                 section.classList.add('hidden');
             });
             
-            // Show selected section
             const targetSection = document.getElementById(sectionId + '-section');
             targetSection.classList.remove('hidden');
             
-            // Update navigation styles
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('border-primary-500', 'text-gray-900');
                 btn.classList.add('border-transparent', 'text-gray-500');
             });
             event.target.classList.remove('border-transparent', 'text-gray-500');
             event.target.classList.add('border-primary-500', 'text-gray-900');
-
-            // If showing schedule section, trigger a window resize event
-            if (sectionId === 'schedule') {
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                }, 100);
-            }
         }
 
-        // Initialize datetime picker
         flatpickr("#datetime-picker", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             minDate: "today"
         });
 
-        // Initialize with dashboard view
-        document.addEventListener('DOMContentLoaded', function() {
-            showSection('dashboard');
-        });
 
         function validatePresenters() {
             const checkboxes = document.querySelectorAll('input[name="presenters[]"]:checked');
@@ -485,14 +535,55 @@
             }
         }
 
-        // Initialize validation on page load
         document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
             validatePresenters();
         });
+
+        function editPresentation(presentationId) {
+            // Redirect to schedule section with presentation data
+            showSection('schedule');
+            
+            // You'll need to implement the logic to pre-fill the schedule form
+            // This could involve making an AJAX request to get the presentation details
+            // and then populating the form fields
+            
+            fetch(`/admin/getPresentationDetails/${presentationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate the form fields
+                    document.querySelector('select[name="subject_id"]').value = data.subject_id;
+                    
+                    // Clear existing presenter selections
+                    document.querySelectorAll('input[name="presenters[]"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    
+                    // Check the presenters for this presentation
+                    data.presenters.forEach(presenterId => {
+                        const checkbox = document.querySelector(`input[name="presenters[]"][value="${presenterId}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                    
+                    document.querySelector('input[name="date_time"]').value = data.date_time;
+                    
+                    // Add a hidden input for the presentation ID
+                    let hiddenInput = document.querySelector('input[name="presentation_id"]');
+                    if (!hiddenInput) {
+                        hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'presentation_id';
+                        document.querySelector('form').appendChild(hiddenInput);
+                    }
+                    hiddenInput.value = presentationId;
+                    
+                    validatePresenters();
+                });
+        }
+
     </script>
 
     <style>
-        /* Add some custom styles to ensure calendar is visible */
         .fc {
             background-color: white;
         }

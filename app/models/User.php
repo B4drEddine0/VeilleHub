@@ -18,47 +18,17 @@ public function register($username, $password, $email, $role) {
 }
 
 public function login($userData){
-    
-    try {
+
         $result = $this->conn->prepare("SELECT * FROM users WHERE email=?");
         $result->execute([$userData[0]]);
         $user = $result->fetch(PDO::FETCH_ASSOC);
 
         if($user && password_verify($userData[1], $user["password"])){
-           
-
            return  $user ;
-        
         }
         return false;
-    } catch (PDOException $e) {
-        throw new Exception($e->getMessage());
-    }
 }
 
-
-
-
-
-public function getStatistics() {
-    try {
-        $statistics = [];
-
-        // Total number of users
-        $query = $this->conn->prepare("SELECT COUNT(*) AS total_users FROM users");
-        $query->execute();
-        $statistics['total_users'] = $query->fetch(PDO::FETCH_ASSOC)['total_users'];
-
-        // Users by role
-        $query = $this->conn->prepare("SELECT role, COUNT(*) as count FROM users GROUP BY role");
-        $query->execute();
-        $statistics['users_by_role'] = $query->fetchAll(PDO::FETCH_ASSOC);
-
-        return $statistics;
-    } catch (PDOException $e) {
-        throw new Exception($e->getMessage());
-    }
-}
 
 public function getAllUsers(){
       

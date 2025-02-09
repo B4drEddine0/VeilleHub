@@ -14,7 +14,7 @@ class Subject extends Db {
     }
 
     public function getAllSuggestions() {
-        $query = "SELECT s.*,u.username FROM subjects s join users u on s.suggested_by = u.user_id";
+        $query = "SELECT * from subjects WHERE status = 'approved' and sub_id not in (select subject_id from presentations)";
         return $this->conn->query($query)->fetchAll();
     }
 
@@ -24,24 +24,21 @@ class Subject extends Db {
         return $query->execute([$status, $subjectId]);
     }
 
- 
-    public function schedulePresentation($data) {
-            $stmt = $this->conn->prepare("INSERT INTO presentations (subject_id, presentation_date) VALUES (:subject_id, :date_time)");
-            $stmt->execute([
-                ':subject_id' => $data['subject_id'],
-                ':date_time' => $data['date_time']
-            ]);
-            
-            $presentation_id = $this->conn->lastInsertId();
-            
-            $stmt = $this->conn->prepare("INSERT INTO presentation_participants (presentation_id, user_id) VALUES (:presentation_id, :user_id)");
-            
-            foreach ($data['presenters'] as $presenter_id) {
-                $stmt->execute([
-                    ':presentation_id' => $presentation_id,
-                    ':user_id' => $presenter_id
-                ]);
-            }
-            return true;
+    public function createSuggestion($data) {
+        $sql = "INSERT INTO subjects (title, suggested_by) VALUES (:title, :id)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'title' => $data['title'],
+            'id' => $data['id']
+        ]);
+
     }
+
+    public function getUsersSuggestions() {
+        $stmt = $this->conn->prepare("SELECT s.*,u.username FROM subjects s join users u on s.suggested_by = u.user_id");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+ 
+    
 }
