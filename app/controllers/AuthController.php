@@ -18,13 +18,12 @@ class AuthController extends BaseController {
     
     public function handleRegister() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            try {
+
                 $username = $_POST['username'];
                 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $email = $_POST['email'];
                 $role = $_POST['role'] ?? 'student'; 
 
-                // Add validation
                 if (empty($username) || empty($password) || empty($email)) {
                     $_SESSION['error'] = 'All fields are required';
                     header('Location: /register');
@@ -39,19 +38,11 @@ class AuthController extends BaseController {
                     exit();
                 }
 
-                // If we get here, registration was successful
                 $_SESSION['success'] = 'Account created successfully! Please login.';
                 header('Location: /login');
                 exit();
-            } catch (Exception $e) {
-                error_log("Registration error: " . $e->getMessage());
-                $_SESSION['error'] = 'An error occurred during registration';
-                header('Location: /register');
-                exit();
-            }
         }
         
-        // Only render the registration form if it's a GET request
         $this->render('auth/register');
     }
 

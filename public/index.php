@@ -23,7 +23,7 @@ Route::setRouter($router);
 // auth routes 
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'handleRegister']);
-Route::get('/login', [AuthController::class, 'showLogin']);
+Route::get('/login', [AuthController::class, 'showleLogin']);
 Route::post('/login', [AuthController::class, 'handleLogin']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -32,6 +32,7 @@ Route::get('/student/dashboard', [StudentController::class, 'dashboard']);
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 Route::post('/admin/updateUserStatus', [AdminController::class, 'updateUserStatus']);
 Route::post('/admin/handleSubject', [AdminController::class, 'handleSubject']);
+Route::post('/admin/schedulePresentation', [AdminController::class, 'schedulePresentation']);
 
 
 // admin routers
@@ -53,3 +54,6 @@ Route::get('/admin/projects', [AdminController::class, 'projects']);
 
 // Dispatch the request
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+
+
+

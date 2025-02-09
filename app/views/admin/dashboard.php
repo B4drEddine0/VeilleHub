@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     <script>
         tailwind.config = {
             theme: {
@@ -270,8 +272,31 @@
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Presentation Calendar</h3>
                     </div>
-                    <div class="p-6">
-                        <div id="calendar" class="bg-white rounded-lg"></div>
+                    <div class="p-4">
+                        <div class="calendar-container">
+                            <div class="flex justify-between items-center mb-2">
+                                <button onclick="previousMonth()" class="px-2 py-1 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <h2 id="currentMonth" class="text-lg font-semibold"></h2>
+                                <button onclick="nextMonth()" class="px-2 py-1 bg-gray-100 rounded-lg hover:bg-gray-200">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-7 gap-1">
+                                <!-- Days of Week -->
+                                <div class="text-center font-semibold text-gray-600 text-sm">Sun</div>
+                                <div class="text-center font-semibold text-gray-600 text-sm">Mon</div>
+                                <div class="text-center font-semibold text-gray-600 text-sm">Tue</div>
+                                <div class="text-center font-semibold text-gray-600 text-sm">Wed</div>
+                                <div class="text-center font-semibold text-gray-600 text-sm">Thu</div>
+                                <div class="text-center font-semibold text-gray-600 text-sm">Fri</div>
+                                <div class="text-center font-semibold text-gray-600 text-sm">Sat</div>
+                                
+                                <div id="calendarDays" class="grid grid-cols-7 gap-1 col-span-7"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -294,22 +319,43 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Presenters</label>
-                                <select name="presenters[]" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Presenters</label>
+                                <div class="max-h-60 overflow-y-auto border border-gray-300 rounded-md p-3 space-y-2">
                                     <?php foreach($users as $user): ?>
                                         <?php if($user['status'] == 'active'): ?>
-                                            <option value="<?= $user['user_id'] ?>"><?= htmlspecialchars($user['username']) ?></option>
+                                            <label class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer">
+                                                <input type="checkbox" 
+                                                       name="presenters[]" 
+                                                       value="<?= $user['user_id'] ?>"
+                                                       class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                                                       onchange="validatePresenters()">
+                                                <div class="flex items-center space-x-3">
+                                                    <img class="h-8 w-8 rounded-full" 
+                                                         src="https://ui-avatars.com/api/?name=<?= urlencode($user['username']) ?>" 
+                                                         alt="<?= htmlspecialchars($user['username']) ?>">
+                                                    <span class="text-sm text-gray-700"><?= htmlspecialchars($user['username']) ?></span>
+                                                </div>
+                                            </label>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
-                                </select>
-                                <p class="mt-1 text-sm text-gray-500">Select at least 2 presenters</p>
+                                </div>
+                                <!-- <p class="mt-2 text-sm text-gray-500 flex items-center">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Select at least 2 presenters
+                                </p> -->
+                                <p id="presenter-error" class="mt-1 text-sm text-red-600 hidden">
+                                    Please select at least 2 presenters
+                                </p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Date & Time</label>
                                 <input type="datetime-local" name="date_time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500" required>
                             </div>
                             <div class="pt-4">
-                                <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-base font-medium text-white hover:from-primary-700 hover:to-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm">
+                                <button type="submit" 
+                                        id="schedule-submit"
+                                        disabled
+                                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-base font-medium text-white hover:from-primary-700 hover:to-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm opacity-50 cursor-not-allowed">
                                     Schedule Presentation
                                 </button>
                             </div>
@@ -321,15 +367,77 @@
     </main>
 
     <script>
-        // Navigation
+        let currentDate = new Date();
+        let presentations = <?= json_encode($presentations ?? []) ?>;
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            const daysContainer = document.getElementById('calendarDays');
+            daysContainer.innerHTML = '';
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'h-16 bg-gray-50 rounded-lg';
+                daysContainer.appendChild(emptyDay);
+            }
+            
+            for (let day = 1; day <= totalDays; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'h-16 bg-white border rounded-lg p-1 relative';
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'text-xs font-semibold';
+                dayNumber.textContent = day;
+                dayCell.appendChild(dayNumber);
+                
+                const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayPresentations = presentations.filter(p => p.date.startsWith(currentDateStr));
+                
+                dayPresentations.forEach(presentation => {
+                    const presentationDiv = document.createElement('div');
+                    presentationDiv.className = 'text-xs bg-primary-100 text-primary-800 rounded p-0.5 mt-0.5 overflow-hidden whitespace-nowrap text-ellipsis';
+                    presentationDiv.title = `${presentation.title} - ${presentation.presenters}`;
+                    presentationDiv.textContent = presentation.title;
+                    dayCell.appendChild(presentationDiv);
+                });
+                
+                daysContainer.appendChild(dayCell);
+            }
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCalendar);
+
+        // Update the showSection function
         function showSection(sectionId) {
+            console.log('Showing section:', sectionId);
+            
             // Hide all sections
             document.querySelectorAll('main > section').forEach(section => {
                 section.classList.add('hidden');
             });
             
             // Show selected section
-            document.getElementById(sectionId + '-section').classList.remove('hidden');
+            const targetSection = document.getElementById(sectionId + '-section');
+            targetSection.classList.remove('hidden');
             
             // Update navigation styles
             document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -338,6 +446,13 @@
             });
             event.target.classList.remove('border-transparent', 'text-gray-500');
             event.target.classList.add('border-primary-500', 'text-gray-900');
+
+            // If showing schedule section, trigger a window resize event
+            if (sectionId === 'schedule') {
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
+            }
         }
 
         // Initialize datetime picker
@@ -351,6 +466,59 @@
         document.addEventListener('DOMContentLoaded', function() {
             showSection('dashboard');
         });
+
+        function validatePresenters() {
+            const checkboxes = document.querySelectorAll('input[name="presenters[]"]:checked');
+            const errorMessage = document.getElementById('presenter-error');
+            const submitButton = document.getElementById('schedule-submit');
+            
+            if (checkboxes.length < 2) {
+                errorMessage.classList.remove('hidden');
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                submitButton.classList.remove('hover:from-primary-700', 'hover:to-secondary-700');
+            } else {
+                errorMessage.classList.add('hidden');
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitButton.classList.add('hover:from-primary-700', 'hover:to-secondary-700');
+            }
+        }
+
+        // Initialize validation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            validatePresenters();
+        });
     </script>
+
+    <style>
+        /* Add some custom styles to ensure calendar is visible */
+        .fc {
+            background-color: white;
+        }
+        
+        .fc .fc-daygrid-day {
+            min-height: 100px !important;
+        }
+
+        .fc .fc-daygrid-day-frame {
+            min-height: 100% !important;
+        }
+
+        .fc-daygrid-day-number {
+            font-size: 1rem;
+            padding: 8px !important;
+        }
+
+        .fc-day-today {
+            background-color: #f3f4f6 !important;
+        }
+
+        .fc-event {
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: 1px 0;
+        }
+    </style>
 </body>
 </html>

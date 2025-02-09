@@ -26,20 +26,22 @@ class Subject extends Db {
 
  
     public function schedulePresentation($data) {
-        $query = "INSERT INTO presentations (subject_id, date_time) VALUES (?, ?)";
-        $success = $this->conn->query($query, [$data['subject_id'], $data['date_time']]);
-        
-        if ($success) {
-            $presentationId = $this->conn->lastInsertId();
+            $stmt = $this->conn->prepare("INSERT INTO presentations (subject_id, presentation_date) VALUES (:subject_id, :date_time)");
+            $stmt->execute([
+                ':subject_id' => $data['subject_id'],
+                ':date_time' => $data['date_time']
+            ]);
             
-            foreach ($data['presenters'] as $userId) {
-                $query = "INSERT INTO presentation_presenters (presentation_id, user_id) VALUES (?, ?)";
-                $this->conn->query($query, [$presentationId, $userId]);
+            $presentation_id = $this->conn->lastInsertId();
+            
+            $stmt = $this->conn->prepare("INSERT INTO presentation_participants (presentation_id, user_id) VALUES (:presentation_id, :user_id)");
+            
+            foreach ($data['presenters'] as $presenter_id) {
+                $stmt->execute([
+                    ':presentation_id' => $presentation_id,
+                    ':user_id' => $presenter_id
+                ]);
             }
-            
             return true;
-        }
-        
-        return false;
     }
 }
