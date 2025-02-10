@@ -30,7 +30,7 @@ CREATE TABLE presentation_participants (
     particip_id INT PRIMARY KEY AUTO_INCREMENT,
     presentation_id INT,
     user_id INT,
-    FOREIGN KEY (presentation_id) REFERENCES presentations(present_id),
+    FOREIGN KEY (presentation_id) REFERENCES presentations(present_id) on delete cascade,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -43,37 +43,3 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-
--- Create subject_suggestions table
-CREATE TABLE IF NOT EXISTS subject_suggestions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    category VARCHAR(50) NOT NULL,
-    student_id INT NOT NULL,
-    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES users(user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Create subjects table
-CREATE TABLE IF NOT EXISTS subjects_new (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    category VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Create presentations table
-CREATE TABLE IF NOT EXISTS presentations_new (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    subject_id INT NOT NULL,
-    student_id INT NOT NULL,
-    presentation_date DATETIME NOT NULL,
-    status ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
-    feedback TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (subject_id) REFERENCES subjects_new(id),
-    FOREIGN KEY (student_id) REFERENCES users(user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

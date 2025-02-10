@@ -39,7 +39,7 @@ class AuthController extends BaseController {
                 }
 
                 $_SESSION['success'] = 'Account created successfully! Please login.';
-                header('Location: /login');
+                header('Location: /register');
                 exit();
         }
         

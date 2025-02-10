@@ -82,20 +82,18 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+
     <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <!-- Welcome Banner -->
         <div id="welcomeSection" class="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl shadow-xl mb-8 p-8 text-white relative overflow-hidden">
             <div class="relative z-10">
-                <h2 class="text-3xl font-bold mb-2">Welcome back, John!</h2>
+                <h2 class="text-3xl font-bold mb-2">Welcome back, <?= $_SESSION['username']?></h2>
                 <p class="text-primary-100">Track your learning progress and suggest new subjects for the community.</p>
             </div>
             <div class="absolute right-0 top-0 h-full w-1/2 bg-white opacity-10 transform -skew-x-12"></div>
         </div>
 
-        <!-- Stats Grid -->
+
         <div id="statsSection" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
-            <!-- Suggestions Stats -->
             <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                 <div class="p-6">
                     <div class="flex items-center">
@@ -114,7 +112,7 @@
                 </div>
             </div>
 
-            <!-- Upcoming Presentations -->
+
             <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                 <div class="p-6">
                     <div class="flex items-center">
@@ -133,7 +131,6 @@
                 </div>
             </div>
 
-            <!-- Completed Presentations -->
             <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
                 <div class="p-6">
                     <div class="flex items-center">
@@ -153,7 +150,6 @@
             </div>
         </div>
 
-        <!-- Suggestions Section -->
         <div id="suggestionsSection" class="bg-white rounded-xl shadow-md border border-gray-100">
             <div class="px-6 py-5 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900">Recent Suggestions</h3>
@@ -182,7 +178,7 @@
             </div>
         </div>
 
-        <!-- Presentations Calendar Section -->
+    
         <div id="presentationsSection" class="hidden bg-white rounded-xl shadow-md border border-gray-100 mb-8">
             <div class="px-6 py-5 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900">My Presentations Calendar</h3>
@@ -192,9 +188,8 @@
             </div>
         </div>
 
-        <!-- Upcoming and Past Presentations Sections -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Upcoming Presentations -->
+    
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 hidden" id='venir'>
             <div class="bg-white rounded-xl shadow-md border border-gray-100">
                 <div class="px-6 py-5 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">Présentations à venir</h3>
@@ -215,8 +210,7 @@
                 </div>
             </div>
 
-            <!-- Past Presentations -->
-            <div class="bg-white rounded-xl shadow-md border border-gray-100">
+            <div class="bg-white rounded-xl shadow-md border border-gray-100 hidden" id='passé'>
                 <div class="px-6 py-5 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">Présentations passées</h3>
                 </div>
@@ -239,7 +233,7 @@
 
     </main>
 
-    <!-- Suggest Subject Modal -->
+
     <div id="suggestModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -288,20 +282,19 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Modal elements
         const modal = document.getElementById('suggestModal');
         const openModalBtn = document.getElementById('suggestSubjectBtn');
         const closeModalBtn = document.getElementById('closeSuggestModal');
-
-        // Section elements
         const welcomeSection = document.getElementById('welcomeSection');
         const statsSection = document.getElementById('statsSection');
         const suggestionsSection = document.getElementById('suggestionsSection');
         const presentationsSection = document.getElementById('presentationsSection');
         const presentationsLink = document.querySelector('a[href="/student/presentations"]');
         const calendarEl = document.getElementById('calendar');
+        const venir = document.getElementById('venir');
+        const passé = document.getElementById('passé');
 
-        // Modal event handlers
+    
         openModalBtn.addEventListener('click', () => {
             modal.classList.remove('hidden');
         });
@@ -316,7 +309,7 @@
             }
         });
 
-        // Calendar initialization
+
         var events = <?php echo json_encode(array_map(function($presentation) {
             return [
                 'id' => $presentation['id'],
@@ -337,7 +330,6 @@
             },
             events: events,
             eventDidMount: function(info) {
-                // Initialize Bootstrap tooltip
                 const tooltip = new bootstrap.Tooltip(info.el, {
                     title: info.event.extendedProps.description,
                     placement: 'top',
@@ -347,7 +339,7 @@
             }
         });
 
-        // Navigation event handlers
+
         if (presentationsLink) {
             presentationsLink.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -357,12 +349,14 @@
                 presentationsSection.classList.remove('hidden');
                 presentationsLink.classList.add('border-primary-500', 'text-gray-900');
                 presentationsLink.classList.remove('border-transparent', 'text-gray-500');
+                venir.classList.remove('hidden');
+                passé.classList.remove('hidden');
                 
                 const dashboardLink = document.querySelector('a[href="/student/dashboard"]');
                 dashboardLink.classList.remove('border-primary-500', 'text-gray-900');
                 dashboardLink.classList.add('border-transparent', 'text-gray-500');
                 
-                calendar.render();  // Render calendar when section becomes visible
+                calendar.render();
                 calendar.updateSize();
             });
         }
@@ -377,13 +371,14 @@
                 presentationsSection.classList.add('hidden');
                 this.classList.add('border-primary-500', 'text-gray-900');
                 this.classList.remove('border-transparent', 'text-gray-500');
+                venir.classList.add('hidden');
+                passé.classList.add('hidden');
                 
                 presentationsLink.classList.remove('border-primary-500', 'text-gray-900');
                 presentationsLink.classList.add('border-transparent', 'text-gray-500');
             });
         }
-
-        // Initial calendar render
+        
         calendar.render();
     });
     </script>

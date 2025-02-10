@@ -1,10 +1,12 @@
 <?php
 require_once(__DIR__ . '/../models/Subject.php');
 require_once(__DIR__ . '/../models/Presentation.php');
+require_once(__DIR__ . '/../models/student.php');
 
 class StudentController extends BaseController {
     private $subjectModel;
     private $presentationModel;
+    private $studentModel;
 
     public function __construct() {
         if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'student') {
@@ -16,21 +18,12 @@ class StudentController extends BaseController {
     }
 
     public function dashboard() {
-        // Get statistics
-        // $stats = [
-        //     'suggestions_count' => $this->subjectModel->getStudentSuggestionsCount($_SESSION['user_id']),
-        //     'upcoming_presentations' => $this->subjectModel->getUpcomingPresentationsCount($_SESSION['user_id']),
-        //     'completed_presentations' => $this->subjectModel->getCompletedPresentationsCount($_SESSION['user_id'])
-        // ];
-
-        // Get recent suggestions
-        $Suggestions = $this->subjectModel->getUsersSuggestions($_SESSION['user_id']);
+        $Suggestions = $this->studentModel->getUsersSuggestions($_SESSION['user_id']);
         $presentations = $this->presentationModel->getUserPresentations($_SESSION['user_id']);
         $upcomingPresentations = $this->presentationModel->getUpcomingPresentations($_SESSION['user_id']);
         $pastPresentations = $this->presentationModel->getPastPresentations($_SESSION['user_id']);
-        $countsuggest = $this->subjectModel->getloginUserSuggestions($_SESSION['user_id']);
+        $countsuggest = $this->studentModel->getloginUserSuggestions($_SESSION['user_id']);
 
-        // Render dashboard view
         $this->render('student/dashboard',['Suggestions' => $Suggestions,'presentations' => $presentations, 'upcomingPresentations' => $upcomingPresentations, 'pastPresentations' => $pastPresentations, 'countsuggest' => $countsuggest]);
     }
 

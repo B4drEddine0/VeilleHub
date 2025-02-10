@@ -1,25 +1,28 @@
 <?php
 
-class AdminController {
+class AdminController extends BaseController {
     private $userModel;
     private $subjectModel;
     private $presentationModel;
+    private $teacherModel;
     private $db;
 
     public function __construct() {
         require_once '../app/models/User.php';
         require_once '../app/models/Subject.php';
         require_once '../app/models/Presentation.php';
+        require_once '../app/models/teacher.php';
         $this->userModel = new User();
         $this->subjectModel = new Subject();
         $this->presentationModel = new Presentation();
+        $this->teacherModel = new Teacher();
         $this->db = new PDO('mysql:host=localhost;dbname=veillehub', 'root', '');
     }
 
     public function dashboard() {
         $presentations = $this->presentationModel->getAllPresentations();
-        $users = $this->userModel->getAllUsers();
-        $active = $this->userModel->getActiveUsers();
+        $users = $this->teacherModel->getAllUsers();
+        $active = $this->teacherModel->getActiveUsers();
         $subjects = $this->subjectModel->getPendingSuggestions();
         $subjectss = $this->subjectModel->getAllSuggestions();
 
@@ -39,7 +42,7 @@ class AdminController {
             $userId = $_POST['user_id'];
             $newStatus = $_POST['status'];
             
-            $this->userModel->updateStatus($userId, $newStatus);
+            $this->teacherModel->updateStatus($userId, $newStatus);
             
             $_SESSION['message'] = "User status updated successfully";
             header("Location: /admin/dashboard");
@@ -113,13 +116,5 @@ class AdminController {
             }
 
         header('Location: /admin/dashboard');
-    }
-
-    private function render($view, $data = []) {
-        // Extract data to make it available in the view
-        extract($data);
-        
-        // Include the view file
-        require_once "../app/views/$view.php";
     }
 }

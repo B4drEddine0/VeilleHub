@@ -173,7 +173,6 @@
                 </div>
             </div>
 
-            <!-- Add the new presentations table -->
             <div class="mt-8 bg-white rounded-xl shadow-md">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">Manage Presentations</h3>
@@ -540,46 +539,6 @@
             validatePresenters();
         });
 
-        function editPresentation(presentationId) {
-            // Redirect to schedule section with presentation data
-            showSection('schedule');
-            
-            // You'll need to implement the logic to pre-fill the schedule form
-            // This could involve making an AJAX request to get the presentation details
-            // and then populating the form fields
-            
-            fetch(`/admin/getPresentationDetails/${presentationId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Populate the form fields
-                    document.querySelector('select[name="subject_id"]').value = data.subject_id;
-                    
-                    // Clear existing presenter selections
-                    document.querySelectorAll('input[name="presenters[]"]').forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                    
-                    // Check the presenters for this presentation
-                    data.presenters.forEach(presenterId => {
-                        const checkbox = document.querySelector(`input[name="presenters[]"][value="${presenterId}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    });
-                    
-                    document.querySelector('input[name="date_time"]').value = data.date_time;
-                    
-                    // Add a hidden input for the presentation ID
-                    let hiddenInput = document.querySelector('input[name="presentation_id"]');
-                    if (!hiddenInput) {
-                        hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'presentation_id';
-                        document.querySelector('form').appendChild(hiddenInput);
-                    }
-                    hiddenInput.value = presentationId;
-                    
-                    validatePresenters();
-                });
-        }
 
     </script>
 

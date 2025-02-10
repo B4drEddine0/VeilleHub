@@ -1,4 +1,4 @@
-// Password validation
+
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.querySelector('form[action="/auth/register"]');
     if (registerForm) {

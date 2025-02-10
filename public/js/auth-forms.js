@@ -6,10 +6,9 @@ function showMessage(type, message, callback = null) {
     messageDiv.textContent = message;
     document.body.appendChild(messageDiv);
 
-    // Wait for the message to be displayed before executing the callback
     setTimeout(() => {
         messageDiv.remove();
-        if (callback) callback(); // Execute callback (like redirect) after message is shown
+        if (callback) callback();
     }, 3000);
 }
 

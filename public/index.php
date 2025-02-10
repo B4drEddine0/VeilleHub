@@ -40,22 +40,6 @@ Route::post('/admin/updatePresentationStatus', [AdminController::class, 'updateP
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::post('/subject/suggest', [StudentController::class, 'suggest']);
 
-// admin routers
-
-Route::get('/admin', [AdminController::class, 'index']);
-Route::get('/admin/users', [AdminController::class, 'handleUsers']);
-Route::get('/admin/categories', [AdminController::class, 'categories']);
-Route::get('/admin/testimonials', [AdminController::class, 'testimonials']);
-Route::get('/admin/projects', [AdminController::class, 'projects']);
-
-
-
-// end admin routes 
-
-// client Routes 
-// Route::get('/client/dashboard', [ClientController::class, 'index']);
-
-
 
 // Dispatch the request
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
