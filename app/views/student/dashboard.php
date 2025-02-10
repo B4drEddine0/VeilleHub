@@ -107,7 +107,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">My Suggestions</dt>
-                                <dd class="text-3xl font-bold text-gray-900">5</dd>
+                                <dd class="text-3xl font-bold text-gray-900"><?= count($countsuggest)?></dd>
                             </dl>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Upcoming Presentations</dt>
-                                <dd class="text-3xl font-bold text-gray-900">3</dd>
+                                <dd class="text-3xl font-bold text-gray-900"><?= count($upcomingPresentations)?></dd>
                             </dl>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                         <div class="ml-5 w-0 flex-1">
                             <dl>
                                 <dt class="text-sm font-medium text-gray-500 truncate">Completed Presentations</dt>
-                                <dd class="text-3xl font-bold text-gray-900">8</dd>
+                                <dd class="text-3xl font-bold text-gray-900"><?= count($pastPresentations)?></dd>
                             </dl>
                         </div>
                     </div>

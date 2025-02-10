@@ -28,6 +28,8 @@ Route::post('/login', [AuthController::class, 'handleLogin']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/home', [HomeController::class, 'index']);
 Route::get('/student/dashboard', [StudentController::class, 'dashboard']);
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 Route::post('/admin/updateUserStatus', [AdminController::class, 'updateUserStatus']);

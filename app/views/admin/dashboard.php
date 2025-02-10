@@ -111,7 +111,7 @@
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                                    <dd class="text-3xl font-bold text-gray-900">125</dd>
+                                    <dd class="text-3xl font-bold text-gray-900"><?= count($users)?></dd>
                                 </dl>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Active Users</dt>
-                                    <dd class="text-3xl font-bold text-gray-900">98</dd>
+                                    <dd class="text-3xl font-bold text-gray-900"><?= count($active)?></dd>
                                 </dl>
                             </div>
                         </div>
@@ -147,7 +147,7 @@
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Pending Subjects</dt>
-                                    <dd class="text-3xl font-bold text-gray-900">12</dd>
+                                    <dd class="text-3xl font-bold text-gray-900"><?= count($subjects)?></dd>
                                 </dl>
                             </div>
                         </div>
@@ -165,7 +165,7 @@
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Scheduled Presentations</dt>
-                                    <dd class="text-3xl font-bold text-gray-900">8</dd>
+                                    <dd class="text-3xl font-bold text-gray-900"><?= count($presentations)?></dd>
                                 </dl>
                             </div>
                         </div>

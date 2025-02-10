@@ -19,6 +19,7 @@ class AdminController {
     public function dashboard() {
         $presentations = $this->presentationModel->getAllPresentations();
         $users = $this->userModel->getAllUsers();
+        $active = $this->userModel->getActiveUsers();
         $subjects = $this->subjectModel->getPendingSuggestions();
         $subjectss = $this->subjectModel->getAllSuggestions();
 
@@ -26,7 +27,8 @@ class AdminController {
             'presentations' => $presentations,
             'users' => $users,
             'subjects' => $subjects,
-            'subjectss' => $subjectss
+            'subjectss' => $subjectss,
+            'active' => $active
         ];
 
         $this->render('admin/dashboard', $data);

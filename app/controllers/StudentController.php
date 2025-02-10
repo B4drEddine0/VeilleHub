@@ -28,9 +28,10 @@ class StudentController extends BaseController {
         $presentations = $this->presentationModel->getUserPresentations($_SESSION['user_id']);
         $upcomingPresentations = $this->presentationModel->getUpcomingPresentations($_SESSION['user_id']);
         $pastPresentations = $this->presentationModel->getPastPresentations($_SESSION['user_id']);
+        $countsuggest = $this->subjectModel->getloginUserSuggestions($_SESSION['user_id']);
 
         // Render dashboard view
-        $this->render('student/dashboard',['Suggestions' => $Suggestions,'presentations' => $presentations, 'upcomingPresentations' => $upcomingPresentations, 'pastPresentations' => $pastPresentations]);
+        $this->render('student/dashboard',['Suggestions' => $Suggestions,'presentations' => $presentations, 'upcomingPresentations' => $upcomingPresentations, 'pastPresentations' => $pastPresentations, 'countsuggest' => $countsuggest]);
     }
 
     public function suggest() {
